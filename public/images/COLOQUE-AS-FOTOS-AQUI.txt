@@ -1,0 +1,14 @@
+Coloque as fotos nesta pasta com exatamente estes nomes:
+
+quarto.jpg
+gaveta-joias.jpg
+sala-estar.jpg
+adega.jpg
+cozinha.jpg
+banheiro.jpg
+
+(pode ser .jpg, .jpeg ou .png - se usar outra extensão,
+ajuste o array "projects" no MovelariaFirenze.jsx)
+
+Assim que os arquivos estiverem aqui, as fotos aparecem
+automaticamente no carrossel - sem editar código.
