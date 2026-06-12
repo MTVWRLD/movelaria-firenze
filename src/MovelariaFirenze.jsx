@@ -58,16 +58,27 @@ function useInView(threshold = 0.15) {
   return [ref, visible];
 }
 
-function FadeIn({ children, delay = 0, className = "" }) {
+function FadeIn({ children, delay = 0, className = "", from = "up" }) {
   const [ref, visible] = useInView();
+  const hidden = {
+    up: "translateY(56px)",
+    left: "translateX(-64px)",
+    right: "translateX(64px)",
+    zoom: "scale(0.9) translateY(32px)",
+  }[from];
   return (
     <div
       ref={ref}
       className={className}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(28px)",
-        transition: `opacity 0.8s ease ${delay}s, transform 0.8s ease ${delay}s`,
+        transform: visible ? "none" : hidden,
+        filter: visible ? "none" : "blur(12px)",
+        transition: [
+          `opacity 0.9s ease ${delay}s`,
+          `transform 1.1s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
+          `filter 0.9s ease ${delay}s`,
+        ].join(", "),
       }}
     >
       {children}
@@ -112,12 +123,11 @@ function WhatsAppButton({ text = "Solicitar Orçamento", small = false }) {
       href={`https://wa.me/${PHONE_WHATSAPP}?text=${encodeURIComponent("Olá! Gostaria de solicitar um orçamento de móveis sob medida.")}`}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${small ? "px-5 py-2.5 text-sm" : "px-8 py-4 text-base"} font-bold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer no-underline`}
+      className={`${small ? "px-5 py-2.5 text-sm" : "px-8 py-4 text-base"} btn-shine btn-glow font-bold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer no-underline`}
       style={{
         background: C.terracotta,
         color: C.cream,
         borderRadius: 4,
-        boxShadow: `0 8px 30px ${C.terracotta}40`,
         fontFamily: "'Jost', sans-serif",
         letterSpacing: "0.04em",
       }}
@@ -269,7 +279,7 @@ function Hero() {
               <WhatsAppButton text="Solicitar Orçamento" />
               <a
                 href="#projetos"
-                className="px-8 py-4 text-base inline-flex items-center gap-2 transition-all duration-300 no-underline cursor-pointer"
+                className="btn-trace px-8 py-4 text-base inline-flex items-center gap-2 transition-all duration-300 no-underline cursor-pointer"
                 style={{
                   color: C.cream,
                   border: `1px solid ${C.brown}88`,
@@ -337,7 +347,7 @@ function Carousel() {
   return (
     <section id="projetos" className="py-20 md:py-28" style={{ background: C.bgSoft }}>
       <div className="max-w-7xl mx-auto px-5 md:px-8">
-        <FadeIn>
+        <FadeIn from="left">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
             <div>
               <div className="flex items-center gap-3 mb-4">
@@ -356,7 +366,7 @@ function Carousel() {
                   key={dir}
                   onClick={() => go(dir)}
                   aria-label={dir === -1 ? "Projeto anterior" : "Próximo projeto"}
-                  className="w-12 h-12 flex items-center justify-center transition-all duration-300 cursor-pointer"
+                  className="btn-shine-hover w-12 h-12 flex items-center justify-center transition-all duration-300 cursor-pointer"
                   style={{ background: "transparent", border: `1px solid ${C.brown}66`, borderRadius: 4, color: C.cream }}
                   onMouseEnter={(e) => { e.currentTarget.style.background = C.terracotta; e.currentTarget.style.borderColor = C.terracotta; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = `${C.brown}66`; }}
@@ -370,7 +380,7 @@ function Carousel() {
           </div>
         </FadeIn>
 
-        <FadeIn delay={0.1}>
+        <FadeIn delay={0.1} from="zoom">
           <div
             className="relative overflow-hidden select-none"
             style={{ borderRadius: 6 }}
@@ -449,7 +459,7 @@ function About() {
     <section id="sobre" className="py-20 md:py-28" style={{ background: C.bg }}>
       <div className="max-w-7xl mx-auto px-5 md:px-8">
         <div className="grid md:grid-cols-2 gap-14 md:gap-20">
-          <FadeIn>
+          <FadeIn from="left">
             <div className="md:sticky md:top-28">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-px" style={{ background: C.terracotta }} />
@@ -469,7 +479,7 @@ function About() {
 
           <div className="flex flex-col gap-5">
             {steps.map((s, i) => (
-              <FadeIn key={i} delay={i * 0.08}>
+              <FadeIn key={i} delay={i * 0.12} from="right">
                 <div
                   className="p-6 md:p-8 transition-all duration-500"
                   style={{ background: C.surface, borderRadius: 6, borderLeft: `2px solid ${C.brown}55` }}
@@ -508,7 +518,7 @@ function CTABanner() {
         <div className="absolute right-[15%] top-[-20%] w-80 h-80" style={{ background: C.cream }} />
       </div>
       <div className="relative max-w-3xl mx-auto px-5 md:px-8 text-center">
-        <FadeIn>
+        <FadeIn from="zoom">
           <h2 className="text-3xl md:text-5xl leading-tight mb-5" style={{ color: C.cream, fontFamily: "'Cormorant Garamond', serif", fontWeight: 500 }}>
             Seu ambiente merece um<br />móvel feito para ele
           </h2>
@@ -519,7 +529,7 @@ function CTABanner() {
             href={`https://wa.me/${PHONE_WHATSAPP}?text=${encodeURIComponent("Olá! Gostaria de solicitar um orçamento de móveis sob medida.")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-9 py-4 text-base font-bold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] no-underline cursor-pointer"
+            className="btn-shine px-9 py-4 text-base font-bold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] no-underline cursor-pointer"
             style={{
               background: C.bg,
               color: C.cream,
@@ -545,7 +555,7 @@ function Contact() {
     <section id="contato" className="py-20 md:py-28" style={{ background: C.bgSoft }}>
       <div className="max-w-7xl mx-auto px-5 md:px-8">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16">
-          <FadeIn>
+          <FadeIn from="left">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-px" style={{ background: C.terracotta }} />
@@ -593,7 +603,7 @@ function Contact() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.15}>
+          <FadeIn delay={0.15} from="right">
             <div className="flex flex-col h-full min-h-[380px] overflow-hidden" style={{ borderRadius: 6, background: C.surface }}>
               {/* mapa interativo (embed sem necessidade de API key) */}
               <iframe
@@ -619,7 +629,7 @@ function Contact() {
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm no-underline whitespace-nowrap px-5 py-2.5 transition-all duration-300 self-start sm:self-auto"
+                  className="btn-shine-hover text-sm no-underline whitespace-nowrap px-5 py-2.5 transition-all duration-300 self-start sm:self-auto"
                   style={{ color: C.terracottaLight, border: `1px solid ${C.brown}66`, borderRadius: 4, fontFamily: "'Jost', sans-serif" }}
                   onMouseEnter={(e) => { e.currentTarget.style.borderColor = C.terracotta; e.currentTarget.style.background = `${C.terracotta}15`; }}
                   onMouseLeave={(e) => { e.currentTarget.style.borderColor = `${C.brown}66`; e.currentTarget.style.background = "transparent"; }}
@@ -670,7 +680,7 @@ function FloatingWhatsApp() {
       href={`https://wa.me/${PHONE_WHATSAPP}?text=${encodeURIComponent("Olá! Gostaria de solicitar um orçamento de móveis sob medida.")}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="no-underline"
+      className={`no-underline ${show ? "fab-pulse" : ""}`}
       style={{
         position: "fixed", bottom: 24, right: 24, zIndex: 999,
         width: 60, height: 60, borderRadius: "50%",

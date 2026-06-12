@@ -17,3 +17,143 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: #161210;
 }
+
+/* ════════════════════════════════════════════
+   Button light effects
+   ════════════════════════════════════════════ */
+
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── periodic light sweep across the button ── */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  width: 45%;
+  left: -90%;
+  background: linear-gradient(
+    100deg,
+    transparent 10%,
+    rgba(255, 255, 255, 0.12) 38%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0.12) 62%,
+    transparent 90%
+  );
+  transform: skewX(-18deg);
+  animation: shine-sweep 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+@keyframes shine-sweep {
+  0% { left: -90%; }
+  45%, 100% { left: 150%; }
+}
+
+/* ── light sweep only on hover (subtle elements) ── */
+.btn-shine-hover {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine-hover::after {
+  content: "";
+  position: absolute;
+  top: -25%;
+  bottom: -25%;
+  width: 55%;
+  left: -100%;
+  background: linear-gradient(
+    100deg,
+    transparent 10%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 90%
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+}
+.btn-shine-hover:hover::after {
+  animation: shine-sweep-once 0.7s ease forwards;
+}
+@keyframes shine-sweep-once {
+  from { left: -100%; }
+  to { left: 160%; }
+}
+
+/* ── breathing glow around primary buttons ── */
+.btn-glow {
+  animation: glow-pulse 3.8s ease-in-out infinite;
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 8px 28px rgba(182, 81, 24, 0.28); }
+  50% { box-shadow: 0 8px 44px rgba(212, 104, 42, 0.6), 0 0 18px rgba(212, 104, 42, 0.25); }
+}
+
+/* ── light that runs along the border (outline buttons) ── */
+.btn-trace {
+  position: relative;
+}
+.btn-trace::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 4px;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 0%,
+    transparent 62%,
+    rgba(212, 104, 42, 0.9) 80%,
+    rgba(245, 239, 231, 0.95) 88%,
+    rgba(212, 104, 42, 0.9) 93%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: trace-spin 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes trace-spin {
+  to { --angle: 360deg; }
+}
+
+/* ── expanding pulse rings (floating WhatsApp) ── */
+.fab-pulse::before,
+.fab-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(37, 211, 102, 0.55);
+  animation: fab-ring 2.6s ease-out infinite;
+  pointer-events: none;
+}
+.fab-pulse::after {
+  animation-delay: 1.3s;
+}
+@keyframes fab-ring {
+  0% { transform: scale(1); opacity: 0.85; }
+  100% { transform: scale(1.75); opacity: 0; }
+}
+
+/* ── accessibility: respect reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .btn-shine::after,
+  .btn-shine-hover:hover::after,
+  .btn-glow,
+  .btn-trace::before,
+  .fab-pulse::before,
+  .fab-pulse::after {
+    animation: none;
+  }
+}
