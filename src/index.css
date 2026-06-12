@@ -20,7 +20,29 @@ body {
 
 /* ════════════════════════════════════════════
    Liquid Glass material system
+
+   Performance notes: blur radii are driven by CSS vars so
+   small screens get much cheaper backdrop filters, and all
+   continuous animations are gated to desktop-class devices
+   (hover + fine pointer) or disabled under reduced motion.
    ════════════════════════════════════════════ */
+
+:root {
+  --lg-blur: 22px;
+  --lg-blur-strong: 28px;
+  --lg-blur-soft: 14px;
+  --lg-saturate: 170%;
+}
+
+/* lighter glass for phones / small screens */
+@media (max-width: 820px) {
+  :root {
+    --lg-blur: 10px;
+    --lg-blur-strong: 14px;
+    --lg-blur-soft: 6px;
+    --lg-saturate: 140%;
+  }
+}
 
 /* ── base glass: translucent, blurred, saturated, with specular rim ── */
 .lg-glass {
@@ -31,8 +53,8 @@ body {
     rgba(255, 255, 255, 0.045) 40%,
     rgba(255, 255, 255, 0.025) 100%
   );
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-saturate));
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
@@ -48,8 +70,8 @@ body {
     rgba(28, 22, 18, 0.62) 0%,
     rgba(28, 22, 18, 0.48) 100%
   );
-  -webkit-backdrop-filter: blur(32px) saturate(190%);
-  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(var(--lg-blur-strong)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-strong)) saturate(var(--lg-saturate));
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
@@ -61,10 +83,21 @@ body {
 .lg-glass-soft {
   position: relative;
   background: rgba(255, 255, 255, 0.055);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--lg-blur-soft)) saturate(var(--lg-saturate));
+  backdrop-filter: blur(var(--lg-blur-soft)) saturate(var(--lg-saturate));
   border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ── solid fallback when backdrop-filter is unsupported (old browsers) ── */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .lg-glass,
+  .lg-glass-soft {
+    background: rgba(36, 29, 24, 0.92);
+  }
+  .lg-glass-strong {
+    background: rgba(24, 19, 16, 0.96);
+  }
 }
 
 /* ── moving specular highlight along the top edge ── */
@@ -97,31 +130,37 @@ body {
     background 0.5s ease,
     border-color 0.5s ease;
 }
-.lg-lift:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 20px 56px rgba(0, 0, 0, 0.55);
+@media (hover: hover) {
+  .lg-lift:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.25),
+      0 20px 56px rgba(0, 0, 0, 0.55);
+  }
 }
 
 /* ════════════════════════════════════════════
    Ambient liquid background
+
+   Orbs are radial gradients (not blurred solids), so they
+   cost nothing to composite. Drift animation is transform-only
+   and runs on desktop pointers only.
    ════════════════════════════════════════════ */
 
 .lg-orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(90px);
   opacity: 0.5;
   pointer-events: none;
-  will-change: transform;
 }
-.lg-orb-drift {
-  animation: orb-drift 26s ease-in-out infinite alternate;
-}
-.lg-orb-drift-2 {
-  animation: orb-drift-2 32s ease-in-out infinite alternate;
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .lg-orb-drift {
+    animation: orb-drift 26s ease-in-out infinite alternate;
+  }
+  .lg-orb-drift-2 {
+    animation: orb-drift-2 32s ease-in-out infinite alternate;
+  }
 }
 @keyframes orb-drift {
   0% { transform: translate(0, 0) scale(1); }
@@ -136,7 +175,7 @@ body {
    Button light effects
    ════════════════════════════════════════════ */
 
-/* ── periodic light sweep across the button ── */
+/* ── periodic light sweep across the button (transform-only) ── */
 .btn-shine {
   position: relative;
   overflow: hidden;
@@ -148,7 +187,7 @@ body {
   top: -25%;
   bottom: -25%;
   width: 45%;
-  left: -90%;
+  left: 0;
   background: linear-gradient(
     100deg,
     transparent 10%,
@@ -157,13 +196,17 @@ body {
     rgba(255, 255, 255, 0.12) 62%,
     transparent 90%
   );
-  transform: skewX(-18deg);
-  animation: shine-sweep 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  transform: translateX(-160%) skewX(-18deg);
   pointer-events: none;
 }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .btn-shine::after {
+    animation: shine-sweep 3.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+}
 @keyframes shine-sweep {
-  0% { left: -90%; }
-  45%, 100% { left: 150%; }
+  0% { transform: translateX(-160%) skewX(-18deg); }
+  45%, 100% { transform: translateX(330%) skewX(-18deg); }
 }
 
 /* ── light sweep only on hover (subtle elements) ── */
@@ -178,27 +221,34 @@ body {
   top: -25%;
   bottom: -25%;
   width: 55%;
-  left: -100%;
+  left: 0;
   background: linear-gradient(
     100deg,
     transparent 10%,
     rgba(255, 255, 255, 0.35) 50%,
     transparent 90%
   );
-  transform: skewX(-18deg);
+  transform: translateX(-160%) skewX(-18deg);
   pointer-events: none;
 }
 .btn-shine-hover:hover::after {
   animation: shine-sweep-once 0.7s ease forwards;
 }
 @keyframes shine-sweep-once {
-  from { left: -100%; }
-  to { left: 160%; }
+  from { transform: translateX(-160%) skewX(-18deg); }
+  to { transform: translateX(300%) skewX(-18deg); }
 }
 
-/* ── breathing glow around primary buttons ── */
+/* ── glow around primary buttons (breathing only on desktop) ── */
 .btn-glow {
-  animation: glow-pulse 3.8s ease-in-out infinite;
+  box-shadow:
+    0 8px 32px rgba(182, 81, 24, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .btn-glow {
+    animation: glow-pulse 3.8s ease-in-out infinite;
+  }
 }
 @keyframes glow-pulse {
   0%, 100% { box-shadow: 0 8px 28px rgba(182, 81, 24, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35); }

@@ -43,17 +43,21 @@ function LogoMark({ size = 34 }) {
   );
 }
 
-/* ── ambient liquid background orbs ── */
+/* ── ambient liquid background orbs ──
+   radial gradients instead of filter:blur — same soft look,
+   a fraction of the GPU cost on phones and old machines */
+const orbGradient = (color) => `radial-gradient(circle, ${color} 0%, transparent 68%)`;
+
 function AmbientOrbs({ variant = "a" }) {
   const sets = {
     a: [
-      { className: "lg-orb lg-orb-drift", style: { width: 420, height: 420, top: "-8%", right: "-5%", background: C.terracotta, opacity: 0.32 } },
-      { className: "lg-orb lg-orb-drift-2", style: { width: 360, height: 360, bottom: "5%", left: "-8%", background: C.brown, opacity: 0.3 } },
-      { className: "lg-orb lg-orb-drift", style: { width: 240, height: 240, top: "40%", left: "35%", background: C.terracottaLight, opacity: 0.14 } },
+      { className: "lg-orb lg-orb-drift", style: { width: 560, height: 560, top: "-14%", right: "-10%", background: orbGradient(C.terracotta), opacity: 0.34 } },
+      { className: "lg-orb lg-orb-drift-2", style: { width: 480, height: 480, bottom: "0%", left: "-12%", background: orbGradient(C.brown), opacity: 0.32 } },
+      { className: "lg-orb lg-orb-drift", style: { width: 320, height: 320, top: "36%", left: "32%", background: orbGradient(C.terracottaLight), opacity: 0.15 } },
     ],
     b: [
-      { className: "lg-orb lg-orb-drift-2", style: { width: 380, height: 380, top: "-10%", left: "-6%", background: C.terracotta, opacity: 0.26 } },
-      { className: "lg-orb lg-orb-drift", style: { width: 320, height: 320, bottom: "-8%", right: "-4%", background: C.brownDark, opacity: 0.42 } },
+      { className: "lg-orb lg-orb-drift-2", style: { width: 500, height: 500, top: "-16%", left: "-10%", background: orbGradient(C.terracotta), opacity: 0.28 } },
+      { className: "lg-orb lg-orb-drift", style: { width: 420, height: 420, bottom: "-14%", right: "-8%", background: orbGradient(C.brownDark), opacity: 0.45 } },
     ],
   }[variant];
   return (
@@ -95,11 +99,9 @@ function FadeIn({ children, delay = 0, className = "", from = "up" }) {
       style={{
         opacity: visible ? 1 : 0,
         transform: visible ? "none" : hidden,
-        filter: visible ? "none" : "blur(12px)",
         transition: [
           `opacity 0.9s ease ${delay}s`,
           `transform 1.1s cubic-bezier(0.16, 1, 0.3, 1) ${delay}s`,
-          `filter 0.9s ease ${delay}s`,
         ].join(", "),
       }}
     >
@@ -420,10 +422,12 @@ function Carousel() {
                   <div key={i} className="w-full flex-shrink-0">
                     <div className="aspect-[4/3] md:aspect-[16/9] relative">
                       <ProjectImage src={p.img} title={p.title} />
-                      {/* frosted glass caption bar */}
+                      {/* frosted glass caption bar — live blur only on the visible
+                          slide so off-screen slides don't cost anything */}
                       <div className="absolute bottom-0 left-0 right-0 p-3 md:p-5">
                         <div
-                          className="lg-glass-strong lg-specular rounded-2xl md:rounded-3xl px-5 py-4 md:px-8 md:py-6"
+                          className={`${i === current ? "lg-glass-strong" : ""} lg-specular rounded-2xl md:rounded-3xl px-5 py-4 md:px-8 md:py-6`}
+                          style={i === current ? undefined : { background: "rgba(24,19,16,0.82)", border: "1px solid rgba(255,255,255,0.14)" }}
                         >
                           <h3 className="text-lg md:text-2xl mb-1 font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.02em" }}>
                             {p.title}
@@ -542,10 +546,10 @@ function CTABanner() {
   return (
     <section className="relative py-20 md:py-28 overflow-hidden" style={{ background: C.bg }}>
       {/* vibrant gradient field behind the glass panel */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <div className="lg-orb lg-orb-drift" style={{ width: 520, height: 520, top: "-15%", left: "12%", background: C.terracotta, opacity: 0.55 }} />
-        <div className="lg-orb lg-orb-drift-2" style={{ width: 460, height: 460, bottom: "-20%", right: "10%", background: C.terracottaLight, opacity: 0.4 }} />
-        <div className="lg-orb" style={{ width: 300, height: 300, top: "30%", right: "35%", background: C.brown, opacity: 0.5 }} />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="lg-orb lg-orb-drift" style={{ width: 680, height: 680, top: "-22%", left: "8%", background: orbGradient(C.terracotta), opacity: 0.6 }} />
+        <div className="lg-orb lg-orb-drift-2" style={{ width: 600, height: 600, bottom: "-28%", right: "6%", background: orbGradient(C.terracottaLight), opacity: 0.45 }} />
+        <div className="lg-orb" style={{ width: 400, height: 400, top: "24%", right: "32%", background: orbGradient(C.brown), opacity: 0.55 }} />
       </div>
       <div className="relative max-w-3xl mx-auto px-5 md:px-8">
         <FadeIn from="zoom">
