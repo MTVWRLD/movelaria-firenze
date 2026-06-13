@@ -5,16 +5,29 @@ const PHONE_DISPLAY = "(51) 99678-2579";
 const ADDRESS = "Av. Hugo Sperb, 999 - Industrial, Igrejinha/RS";
 const INSTAGRAM = "https://www.instagram.com/movelariafirenze/";
 
-/* ── brand tokens (from logo) ── */
+/* ── brand tokens (from logo) ──
+   White-based palette: warm off-white surfaces with the original
+   terracotta orange kept as the brand accent. */
 const C = {
-  terracotta: "#b65118",
-  terracottaLight: "#d4682a",
-  brown: "#7d4e2d",
+  terracotta: "#c0531a",       // brand orange (kept)
+  terracottaLight: "#e0772f",
+  terracottaDeep: "#9c4313",
+  brown: "#8a5a36",
   brownDark: "#5a3820",
-  bg: "#100d0b",        // near-black warm
-  cream: "#f5efe7",
-  creamMuted: "#cfc4b6",
-  textDim: "#9c8e7e",
+  bg: "#f7f2eb",        // warm off-white page
+  surface: "#fffdf9",   // brightest card white
+  ink: "#2b2018",       // dark warm text (headings)
+  inkMuted: "#5f5347",  // body text
+  textDim: "#9a8b7b",   // labels / captions
+  onColor: "#fff8f0",   // text on top of the orange buttons
+};
+
+/* soft specular bloom that follows the cursor across a button —
+   sets the --mx / --my CSS vars the .btn-light rule reads from */
+const trackLight = (e) => {
+  const r = e.currentTarget.getBoundingClientRect();
+  e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+  e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
 };
 
 const SANS = "'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif";
@@ -117,11 +130,11 @@ function ProjectImage({ src, title }) {
     return (
       <div
         className="w-full h-full flex items-center justify-center"
-        style={{ background: "linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02))" }}
+        style={{ background: "linear-gradient(145deg, rgba(192,83,26,0.06), rgba(138,90,54,0.04))" }}
       >
         <div className="text-center px-6">
           <LogoMark size={48} />
-          <p className="mt-4 text-sm font-medium" style={{ color: C.creamMuted }}>{title}</p>
+          <p className="mt-4 text-sm font-medium" style={{ color: C.inkMuted }}>{title}</p>
           <p className="mt-1 text-xs" style={{ color: C.textDim }}>
             Adicione a foto em <code style={{ color: C.terracottaLight }}>public/{src.replace(import.meta.env.BASE_URL, "")}</code>
           </p>
@@ -147,11 +160,12 @@ function WhatsAppButton({ text = "Solicitar Orçamento", small = false }) {
       href={`https://wa.me/${PHONE_WHATSAPP}?text=${encodeURIComponent("Olá! Gostaria de solicitar um orçamento de móveis sob medida.")}`}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${small ? "px-5 py-2.5 text-sm" : "px-8 py-4 text-base"} btn-shine btn-glow font-semibold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer no-underline rounded-full`}
+      onMouseMove={trackLight}
+      className={`${small ? "px-5 py-2.5 text-sm" : "px-8 py-4 text-base"} btn-light btn-shine btn-glow font-semibold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer no-underline rounded-full`}
       style={{
         background: `linear-gradient(135deg, ${C.terracottaLight}, ${C.terracotta})`,
-        color: C.cream,
-        border: "1px solid rgba(255,255,255,0.25)",
+        color: C.onColor,
+        border: "1px solid rgba(255,255,255,0.35)",
         fontFamily: SANS,
         letterSpacing: "-0.01em",
       }}
@@ -194,7 +208,7 @@ function Navbar() {
               <span className="block text-[9px] tracking-[0.35em] uppercase" style={{ color: C.textDim, fontFamily: SANS }}>
                 Movelaria
               </span>
-              <span className="block text-lg tracking-[0.12em] uppercase font-medium" style={{ color: C.cream, fontFamily: SERIF }}>
+              <span className="block text-lg tracking-[0.12em] uppercase font-medium" style={{ color: C.ink, fontFamily: SERIF }}>
                 Firenze
               </span>
             </div>
@@ -206,9 +220,9 @@ function Navbar() {
                 key={l.href}
                 href={l.href}
                 className="text-sm no-underline transition-all duration-300 px-4 py-2 rounded-full"
-                style={{ color: C.creamMuted, fontFamily: SANS, letterSpacing: "-0.01em" }}
-                onMouseEnter={(e) => { e.target.style.color = C.cream; e.target.style.background = "rgba(255,255,255,0.09)"; }}
-                onMouseLeave={(e) => { e.target.style.color = C.creamMuted; e.target.style.background = "transparent"; }}
+                style={{ color: C.inkMuted, fontFamily: SANS, letterSpacing: "-0.01em" }}
+                onMouseEnter={(e) => { e.target.style.color = C.terracotta; e.target.style.background = "rgba(192,83,26,0.08)"; }}
+                onMouseLeave={(e) => { e.target.style.color = C.inkMuted; e.target.style.background = "transparent"; }}
               >
                 {l.label}
               </a>
@@ -222,7 +236,7 @@ function Navbar() {
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Abrir menu"
             className="md:hidden p-2 rounded-full lg-glass-soft"
-            style={{ color: C.cream }}
+            style={{ color: C.ink }}
           >
             <svg width="22" height="22" viewBox="0 0 26 26" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
               <path d={menuOpen ? "M6 6l14 14M6 20L20 6" : "M4 7h18M4 13h18M4 19h18"} />
@@ -231,7 +245,7 @@ function Navbar() {
         </div>
 
         {menuOpen && (
-          <div className="md:hidden px-5 pb-5" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <div className="md:hidden px-5 pb-5" style={{ borderTop: "1px solid rgba(43,32,24,0.08)" }}>
             <div className="pt-3 flex flex-col gap-1">
               {links.map((l) => (
                 <a
@@ -239,8 +253,8 @@ function Navbar() {
                   href={l.href}
                   onClick={() => setMenuOpen(false)}
                   className="py-3 px-4 no-underline text-base rounded-2xl transition-colors duration-300"
-                  style={{ color: C.cream, fontFamily: SANS }}
-                  onMouseEnter={(e) => e.target.style.background = "rgba(255,255,255,0.08)"}
+                  style={{ color: C.ink, fontFamily: SANS }}
+                  onMouseEnter={(e) => e.target.style.background = "rgba(192,83,26,0.08)"}
                   onMouseLeave={(e) => e.target.style.background = "transparent"}
                 >
                   {l.label}
@@ -278,8 +292,8 @@ function Hero() {
         <div className="max-w-2xl">
           <FadeIn>
             <div className="lg-glass-soft lg-specular inline-flex items-center gap-2.5 mb-8 px-4 py-2 rounded-full">
-              <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracottaLight }} />
-              <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracottaLight, fontFamily: SANS }}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracotta }} />
+              <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracotta, fontFamily: SANS }}>
                 Igrejinha · RS
               </span>
             </div>
@@ -288,12 +302,12 @@ function Hero() {
           <FadeIn delay={0.1}>
             <h1
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.04] mb-7 font-semibold"
-              style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.03em" }}
+              style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.03em" }}
             >
               Móveis sob medida,{" "}
               <span
                 style={{
-                  background: `linear-gradient(110deg, ${C.terracottaLight}, ${C.cream} 60%, ${C.terracottaLight})`,
+                  background: `linear-gradient(110deg, ${C.terracotta}, ${C.terracottaLight} 55%, ${C.brown})`,
                   WebkitBackgroundClip: "text",
                   backgroundClip: "text",
                   color: "transparent",
@@ -305,7 +319,7 @@ function Hero() {
           </FadeIn>
 
           <FadeIn delay={0.2}>
-            <p className="text-base md:text-lg leading-relaxed mb-10 max-w-lg" style={{ color: C.creamMuted, fontFamily: SANS, fontWeight: 300, letterSpacing: "-0.01em" }}>
+            <p className="text-base md:text-lg leading-relaxed mb-10 max-w-lg" style={{ color: C.inkMuted, fontFamily: SANS, fontWeight: 400, letterSpacing: "-0.01em" }}>
               Cada ambiente é único. Projetamos e fabricamos móveis planejados que unem funcionalidade, acabamento premium e o seu jeito de viver.
             </p>
           </FadeIn>
@@ -315,8 +329,9 @@ function Hero() {
               <WhatsAppButton text="Solicitar Orçamento" />
               <a
                 href="#projetos"
-                className="lg-glass lg-specular btn-shine-hover px-8 py-4 text-base inline-flex items-center gap-2 transition-all duration-300 no-underline cursor-pointer rounded-full hover:scale-[1.03] active:scale-[0.97]"
-                style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.01em" }}
+                onMouseMove={trackLight}
+                className="lg-glass lg-specular btn-light btn-shine-hover px-8 py-4 text-base inline-flex items-center gap-2 transition-all duration-300 no-underline cursor-pointer rounded-full hover:scale-[1.03] active:scale-[0.97]"
+                style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.01em" }}
               >
                 Ver Projetos →
               </a>
@@ -331,7 +346,7 @@ function Hero() {
                 { value: "Premium", label: "Acabamento" },
               ].map((s, i) => (
                 <div key={i}>
-                  <div className="text-xl md:text-2xl font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.02em" }}>{s.value}</div>
+                  <div className="text-xl md:text-2xl font-semibold" style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.02em" }}>{s.value}</div>
                   <div className="text-[11px] tracking-[0.18em] uppercase mt-1" style={{ color: C.textDim, fontFamily: SANS }}>{s.label}</div>
                 </div>
               ))}
@@ -380,12 +395,12 @@ function Carousel() {
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
             <div>
               <div className="lg-glass-soft lg-specular inline-flex items-center gap-2.5 mb-5 px-4 py-2 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracottaLight }} />
-                <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracottaLight, fontFamily: SANS }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracotta }} />
+                <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracotta, fontFamily: SANS }}>
                   Portfólio
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl leading-tight font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.03em" }}>
+              <h2 className="text-3xl md:text-5xl leading-tight font-semibold" style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.03em" }}>
                 Projetos que transformam ambientes
               </h2>
             </div>
@@ -394,9 +409,10 @@ function Carousel() {
                 <button
                   key={dir}
                   onClick={() => go(dir)}
+                  onMouseMove={trackLight}
                   aria-label={dir === -1 ? "Projeto anterior" : "Próximo projeto"}
-                  className="lg-glass lg-specular btn-shine-hover w-12 h-12 flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full hover:scale-[1.06] active:scale-[0.94]"
-                  style={{ color: C.cream }}
+                  className="lg-glass lg-specular btn-light btn-shine-hover w-12 h-12 flex items-center justify-center transition-all duration-300 cursor-pointer rounded-full hover:scale-[1.06] active:scale-[0.94]"
+                  style={{ color: C.ink }}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                     <path d={dir === -1 ? "M15 18l-6-6 6-6" : "M9 18l6-6-6-6"} />
@@ -427,12 +443,12 @@ function Carousel() {
                       <div className="absolute bottom-0 left-0 right-0 p-3 md:p-5">
                         <div
                           className={`${i === current ? "lg-glass-strong" : ""} lg-specular rounded-2xl md:rounded-3xl px-5 py-4 md:px-8 md:py-6`}
-                          style={i === current ? undefined : { background: "rgba(24,19,16,0.82)", border: "1px solid rgba(255,255,255,0.14)" }}
+                          style={i === current ? undefined : { background: "rgba(255,253,249,0.85)", border: "1px solid rgba(43,32,24,0.08)" }}
                         >
-                          <h3 className="text-lg md:text-2xl mb-1 font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.02em" }}>
+                          <h3 className="text-lg md:text-2xl mb-1 font-semibold" style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.02em" }}>
                             {p.title}
                           </h3>
-                          <p className="text-sm md:text-base max-w-xl" style={{ color: C.creamMuted, fontFamily: SANS, fontWeight: 300 }}>
+                          <p className="text-sm md:text-base max-w-xl" style={{ color: C.inkMuted, fontFamily: SANS, fontWeight: 400 }}>
                             {p.desc}
                           </p>
                         </div>
@@ -459,7 +475,7 @@ function Carousel() {
                   height: 8,
                   borderRadius: 99,
                   border: "none",
-                  background: current === i ? C.terracottaLight : "rgba(255,255,255,0.22)",
+                  background: current === i ? C.terracotta : "rgba(43,32,24,0.18)",
                 }}
               />
             ))}
@@ -469,7 +485,7 @@ function Carousel() {
         <FadeIn delay={0.2}>
           <p className="text-center mt-10 text-sm" style={{ color: C.textDim, fontFamily: SANS }}>
             Quer ver mais? Acompanhe nossos projetos no{" "}
-            <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="no-underline hover:underline" style={{ color: C.terracottaLight }}>
+            <a href={INSTAGRAM} target="_blank" rel="noopener noreferrer" className="no-underline hover:underline" style={{ color: C.terracotta }}>
               Instagram @movelariafirenze
             </a>
           </p>
@@ -496,15 +512,15 @@ function About() {
           <FadeIn from="left">
             <div className="md:sticky md:top-32">
               <div className="lg-glass-soft lg-specular inline-flex items-center gap-2.5 mb-5 px-4 py-2 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracottaLight }} />
-                <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracottaLight, fontFamily: SANS }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracotta }} />
+                <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracotta, fontFamily: SANS }}>
                   Como trabalhamos
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl leading-tight mb-6 font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.03em" }}>
+              <h2 className="text-3xl md:text-5xl leading-tight mb-6 font-semibold" style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.03em" }}>
                 Da ideia ao ambiente pronto
               </h2>
-              <p className="text-base leading-relaxed mb-8 max-w-md" style={{ color: C.creamMuted, fontFamily: SANS, fontWeight: 300 }}>
+              <p className="text-base leading-relaxed mb-8 max-w-md" style={{ color: C.inkMuted, fontFamily: SANS, fontWeight: 400 }}>
                 Na Movelaria Firenze, cada projeto nasce de uma conversa. Trabalhamos lado a lado com você, do primeiro rascunho à montagem final, para criar móveis que se encaixam perfeitamente no seu espaço e no seu dia a dia.
               </p>
               <WhatsAppButton text="Começar meu Projeto" />
@@ -518,15 +534,15 @@ function About() {
                   <div className="flex items-start gap-5">
                     <span
                       className="lg-glass-soft lg-specular flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl text-lg font-semibold"
-                      style={{ color: C.terracottaLight, fontFamily: SANS, letterSpacing: "-0.02em" }}
+                      style={{ color: C.terracotta, fontFamily: SANS, letterSpacing: "-0.02em" }}
                     >
                       {s.num}
                     </span>
                     <div>
-                      <h3 className="text-lg md:text-xl mb-2 font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.02em" }}>
+                      <h3 className="text-lg md:text-xl mb-2 font-semibold" style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.02em" }}>
                         {s.title}
                       </h3>
-                      <p className="text-sm leading-relaxed" style={{ color: C.creamMuted, fontFamily: SANS, fontWeight: 300 }}>
+                      <p className="text-sm leading-relaxed" style={{ color: C.inkMuted, fontFamily: SANS, fontWeight: 400 }}>
                         {s.desc}
                       </p>
                     </div>
@@ -547,28 +563,29 @@ function CTABanner() {
     <section className="relative py-20 md:py-28 overflow-hidden" style={{ background: C.bg }}>
       {/* vibrant gradient field behind the glass panel */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="lg-orb lg-orb-drift" style={{ width: 680, height: 680, top: "-22%", left: "8%", background: orbGradient(C.terracotta), opacity: 0.6 }} />
-        <div className="lg-orb lg-orb-drift-2" style={{ width: 600, height: 600, bottom: "-28%", right: "6%", background: orbGradient(C.terracottaLight), opacity: 0.45 }} />
-        <div className="lg-orb" style={{ width: 400, height: 400, top: "24%", right: "32%", background: orbGradient(C.brown), opacity: 0.55 }} />
+        <div className="lg-orb lg-orb-drift" style={{ width: 680, height: 680, top: "-22%", left: "8%", background: orbGradient(C.terracotta), opacity: 0.4 }} />
+        <div className="lg-orb lg-orb-drift-2" style={{ width: 600, height: 600, bottom: "-28%", right: "6%", background: orbGradient(C.terracottaLight), opacity: 0.32 }} />
+        <div className="lg-orb" style={{ width: 400, height: 400, top: "24%", right: "32%", background: orbGradient(C.brown), opacity: 0.3 }} />
       </div>
       <div className="relative max-w-3xl mx-auto px-5 md:px-8">
         <FadeIn from="zoom">
           <div className="lg-glass lg-specular rounded-[2.5rem] px-6 py-14 md:px-14 md:py-16 text-center">
-            <h2 className="text-3xl md:text-5xl leading-tight mb-5 font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.03em" }}>
+            <h2 className="text-3xl md:text-5xl leading-tight mb-5 font-semibold" style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.03em" }}>
               Seu ambiente merece um<br />móvel feito para ele
             </h2>
-            <p className="text-base md:text-lg mb-10 max-w-lg mx-auto" style={{ color: C.creamMuted, fontFamily: SANS, fontWeight: 300 }}>
+            <p className="text-base md:text-lg mb-10 max-w-lg mx-auto" style={{ color: C.inkMuted, fontFamily: SANS, fontWeight: 400 }}>
               Conte sua ideia pra gente. O orçamento é rápido e sem compromisso.
             </p>
             <a
               href={`https://wa.me/${PHONE_WHATSAPP}?text=${encodeURIComponent("Olá! Gostaria de solicitar um orçamento de móveis sob medida.")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-shine btn-glow px-9 py-4 text-base font-semibold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] no-underline cursor-pointer rounded-full"
+              onMouseMove={trackLight}
+              className="btn-light btn-shine btn-glow px-9 py-4 text-base font-semibold inline-flex items-center gap-2.5 transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] no-underline cursor-pointer rounded-full"
               style={{
                 background: `linear-gradient(135deg, ${C.terracottaLight}, ${C.terracotta})`,
-                color: C.cream,
-                border: "1px solid rgba(255,255,255,0.25)",
+                color: C.onColor,
+                border: "1px solid rgba(255,255,255,0.35)",
                 fontFamily: SANS,
                 letterSpacing: "-0.01em",
               }}
@@ -595,12 +612,12 @@ function Contact() {
           <FadeIn from="left">
             <div>
               <div className="lg-glass-soft lg-specular inline-flex items-center gap-2.5 mb-5 px-4 py-2 rounded-full">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracottaLight }} />
-                <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracottaLight, fontFamily: SANS }}>
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.terracotta }} />
+                <span className="text-xs tracking-[0.25em] uppercase" style={{ color: C.terracotta, fontFamily: SANS }}>
                   Contato
                 </span>
               </div>
-              <h2 className="text-3xl md:text-5xl leading-tight mb-10 font-semibold" style={{ color: C.cream, fontFamily: SANS, letterSpacing: "-0.03em" }}>
+              <h2 className="text-3xl md:text-5xl leading-tight mb-10 font-semibold" style={{ color: C.ink, fontFamily: SANS, letterSpacing: "-0.03em" }}>
                 Vamos conversar sobre o seu projeto?
               </h2>
 
@@ -616,7 +633,7 @@ function Contact() {
                       <div className="text-[10px] tracking-[0.25em] uppercase mb-1.5" style={{ color: C.textDim, fontFamily: SANS }}>
                         {item.label}
                       </div>
-                      <div className="text-base" style={{ color: C.cream, fontFamily: SANS, fontWeight: 300 }}>
+                      <div className="text-base" style={{ color: C.ink, fontFamily: SANS, fontWeight: 400 }}>
                         {item.value}
                       </div>
                     </div>
@@ -630,10 +647,11 @@ function Contact() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram"
-                  className="lg-glass lg-specular btn-shine-hover w-12 h-12 flex items-center justify-center no-underline transition-all duration-300 rounded-full hover:scale-[1.06]"
-                  style={{ color: C.creamMuted }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = C.terracottaLight}
-                  onMouseLeave={(e) => e.currentTarget.style.color = C.creamMuted}
+                  onMouseMove={trackLight}
+                  className="lg-glass lg-specular btn-light btn-shine-hover w-12 h-12 flex items-center justify-center no-underline transition-all duration-300 rounded-full hover:scale-[1.06]"
+                  style={{ color: C.inkMuted }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = C.terracotta}
+                  onMouseLeave={(e) => e.currentTarget.style.color = C.inkMuted}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
                 </a>
@@ -659,7 +677,7 @@ function Contact() {
                   <p className="text-[10px] tracking-[0.25em] uppercase mb-1" style={{ color: C.textDim, fontFamily: SANS }}>
                     Onde estamos
                   </p>
-                  <p className="text-sm" style={{ color: C.cream, fontFamily: SANS, fontWeight: 300 }}>
+                  <p className="text-sm" style={{ color: C.ink, fontFamily: SANS, fontWeight: 400 }}>
                     Av. Hugo Sperb, 999 - Industrial, Igrejinha/RS
                   </p>
                 </div>
@@ -667,8 +685,9 @@ function Contact() {
                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ADDRESS)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="lg-glass-soft lg-specular btn-shine-hover text-sm no-underline whitespace-nowrap px-5 py-2.5 transition-all duration-300 self-start sm:self-auto rounded-full hover:scale-[1.03]"
-                  style={{ color: C.terracottaLight, fontFamily: SANS }}
+                  onMouseMove={trackLight}
+                  className="lg-glass-soft lg-specular btn-light btn-shine-hover text-sm no-underline whitespace-nowrap px-5 py-2.5 transition-all duration-300 self-start sm:self-auto rounded-full hover:scale-[1.03]"
+                  style={{ color: C.terracotta, fontFamily: SANS }}
                 >
                   Abrir no Google Maps →
                 </a>
@@ -684,12 +703,12 @@ function Contact() {
 /* ── Footer ── */
 function Footer() {
   return (
-    <footer className="py-10" style={{ background: C.bg, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+    <footer className="py-10" style={{ background: C.bg, borderTop: "1px solid rgba(43,32,24,0.1)" }}>
       <div className="max-w-7xl mx-auto px-5 md:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <LogoMark size={26} />
-            <span className="text-sm tracking-[0.12em] uppercase" style={{ color: C.creamMuted, fontFamily: SERIF, fontWeight: 600 }}>
+            <span className="text-sm tracking-[0.12em] uppercase" style={{ color: C.inkMuted, fontFamily: SERIF, fontWeight: 600 }}>
               Movelaria Firenze
             </span>
           </div>
